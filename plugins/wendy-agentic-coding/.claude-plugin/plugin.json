@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "wendy-agentic-coding",
+  "description": "Reusable Wendy CLI, wendy-agent, WendyOS, and device debugging workflows for Claude Code.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Wendy Labs",
+    "url": "https://github.com/wendylabsinc"
+  },
+  "homepage": "https://github.com/wendylabsinc/wendy-agentic-coding",
+  "repository": "https://github.com/wendylabsinc/wendy-agentic-coding",
+  "license": "Apache-2.0",
+  "keywords": [
+    "wendy",
+    "wendyos",
+    "agentic-coding",
+    "claude-code"
+  ],
+  "skills": "./skills/",
+  "commands": "./commands/"
+}

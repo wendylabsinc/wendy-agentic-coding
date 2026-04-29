@@ -1,0 +1,15 @@
+{
+  "name": "wendy-agentic-coding",
+  "description": "Marketplace for Wendy Labs agentic-coding workflows.",
+  "owner": {
+    "name": "Wendy Labs",
+    "url": "https://github.com/wendylabsinc"
+  },
+  "plugins": [
+    {
+      "name": "wendy-agentic-coding",
+      "source": "./plugins/wendy-agentic-coding",
+      "description": "Wendy CLI, wendy-agent, WendyOS, and device workflow guidance for Claude Code."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "wendy-agentic-coding",
+  "interface": {
+    "displayName": "Wendy Agentic Coding"
+  },
+  "plugins": [
+    {
+      "name": "wendy-agentic-coding",
+      "source": {
+        "source": "local",
+        "path": "./plugins/wendy-agentic-coding"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
