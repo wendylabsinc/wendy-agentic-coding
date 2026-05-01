@@ -2,7 +2,7 @@
 
 Shared Codex and Claude Code plugin content for developers building with Wendy.
 
-It teaches agents how the Wendy CLI, `wendy-agent`, WendyOS, project setup, `wendy.json`, entitlements, app lifecycle commands, device debugging, and PR workflows actually work.
+It teaches agents how the Wendy CLI, `wendy-agent`, WendyOS, project setup, `wendy.json`, entitlements, device operations, MCP setup, app lifecycle commands, device debugging, and PR workflows actually work.
 
 License: Apache-2.0.
 
@@ -50,6 +50,8 @@ Try:
 /wendy-agentic-coding:wendy-install
 /wendy-agentic-coding:wendy-project
 /wendy-agentic-coding:wendy-entitlements
+/wendy-agentic-coding:wendy-device-ops
+/wendy-agentic-coding:wendy-mcp
 /wendy-agentic-coding:wendy-device-debug
 ```
 
@@ -120,6 +122,8 @@ Skills:
 - `wendy-install`: install and verify Wendy CLI on macOS, Linux, or Windows.
 - `wendy-project-setup`: initialize projects, validate `wendy.json`, print schema, and manage project entitlements.
 - `wendy-entitlements`: choose and validate `wendy.json` entitlements.
+- `wendy-device-ops`: discover/select devices, inspect version/hardware/WiFi state, update agents, and gather diagnostic evidence.
+- `wendy-mcp-setup`: configure and explain the Wendy CLI MCP server for AI assistants.
 - `wendy-app-lifecycle`: build, run, detach, stream logs, manage apps, and clean up volumes.
 - `wendy-device-debug`: debug WendyOS and live-device runtime issues.
 - `wendy-pr-workflow`: prepare, validate, publish, and clean up Wendy PRs.
@@ -130,6 +134,8 @@ Claude Code commands:
 - `/wendy-agentic-coding:wendy-install`
 - `/wendy-agentic-coding:wendy-project`
 - `/wendy-agentic-coding:wendy-entitlements`
+- `/wendy-agentic-coding:wendy-device-ops`
+- `/wendy-agentic-coding:wendy-mcp`
 - `/wendy-agentic-coding:wendy-build`
 - `/wendy-agentic-coding:wendy-run`
 - `/wendy-agentic-coding:wendy-logs`
@@ -175,13 +181,11 @@ The skills emphasize reading the real code path, preserving dirty worktrees, ver
 
 ## Known Gaps
 
-This plugin is intentionally instruction-first. It does not bundle an MCP server, app connector, LSP config, or automatic system installer.
+This plugin is intentionally instruction-first. It does not bundle an app connector, LSP config, or automatic system installer. For MCP, it guides agents to the Wendy CLI's built-in `wendy mcp` commands.
 
 Possible next additions:
 
-- A Wendy MCP server that exposes `wendy discover`, app logs, and device info as typed tools.
 - A safe Claude hook that only verifies `wendy --version` at session start and suggests setup if missing.
-- A `wendy-device-ops` skill for discovery, defaults, WiFi provisioning, system info, hardware listing, and device updates.
 - A high-friction `wendy-os-image` skill for OS download/install/drive flashing, with explicit destructive-action confirmation rules.
 - A `wendy-cloud` skill if Cloud run, auth, tunnels, or remote discovery become common agent workflows.
 - A `wendy-samples` skill for porting or validating apps under the Wendy samples and templates repos.

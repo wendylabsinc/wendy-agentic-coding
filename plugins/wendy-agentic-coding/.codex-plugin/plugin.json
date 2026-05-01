@@ -1,7 +1,7 @@
 {
   "name": "wendy-agentic-coding",
-  "version": "0.4.0",
-  "description": "Reusable Wendy CLI, wendy-agent, WendyOS, project setup, wendy.json, entitlement, app lifecycle, and device debugging workflows for Codex.",
+  "version": "0.5.0",
+  "description": "Reusable Wendy CLI, wendy-agent, WendyOS, project setup, wendy.json, entitlement, device ops, MCP, app lifecycle, and device debugging workflows for Codex.",
   "author": {
     "name": "Wendy Labs",
     "url": "https://github.com/wendylabsinc"
@@ -15,6 +15,8 @@
     "wendy-json",
     "entitlements",
     "build-run",
+    "device-ops",
+    "mcp",
     "agentic-coding",
     "codex",
     "claude-code"
@@ -23,7 +25,7 @@
   "interface": {
     "displayName": "Wendy Agentic Coding",
     "shortDescription": "Workflows for Wendy CLI, agent, wendy.json, and device repos.",
-    "longDescription": "Guides Codex through Wendy CLI installation, project setup, wendy.json validation and entitlements, Wendy build/run/detach/log/app lifecycle workflows, Wendy's Go CLI, gRPC agent, WendyOS, container runtime, GitHub PR, and live-device debugging workflows.",
+    "longDescription": "Guides Codex through Wendy CLI installation, project setup, wendy.json validation and entitlements, device discovery/inspection/update operations, Wendy MCP setup, Wendy build/run/detach/log/app lifecycle workflows, Wendy's Go CLI, gRPC agent, WendyOS, container runtime, GitHub PR, and live-device debugging workflows.",
     "developerName": "Wendy Labs",
     "category": "Productivity",
     "capabilities": [
@@ -36,6 +38,8 @@
       "Use Wendy Agentic Coding to install Wendy CLI and verify device discovery.",
       "Use Wendy Agentic Coding to initialize or validate this Wendy project.",
       "Use Wendy Agentic Coding to choose wendy.json entitlements for this app.",
+      "Use Wendy Agentic Coding to inspect this WendyOS device with CLI-native device ops.",
+      "Use Wendy Agentic Coding to configure Wendy MCP for this assistant.",
       "Use Wendy Agentic Coding to run this app detached and stream logs.",
       "Use Wendy Agentic Coding to debug this WendyOS device runtime issue from logs to root cause.",
       "Use Wendy Agentic Coding to prepare a Wendy PR with the right tests and review cleanup."

@@ -20,8 +20,10 @@ wendy init --app-id <app-id> --target wendyos --language python --no-extra-entit
 Template scaffold:
 
 ```bash
-wendy init --app-id <app-id> --target wendyos --language rust --template simple-api --var PORT=8080 --assistant skip
+wendy init --app-id <app-id> --target wendyos --language rust --template simple-api --var PORT=8080 --assistant skip --git-init no
 ```
+
+Template init can still prompt if the selected template has required variables that are not supplied with `--var`. Pass every required template variable, and set `--git-init yes` or `--git-init no`, when the goal is a fully non-interactive agent run.
 
 Project with entitlements:
 

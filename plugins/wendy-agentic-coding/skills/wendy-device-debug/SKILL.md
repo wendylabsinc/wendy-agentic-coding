@@ -16,7 +16,14 @@ Use this for live-device and cross-layer runtime bugs. Static code reading is no
    - Agent behavior: service implementation, containerd adapter, OCI spec, logs.
    - WendyOS behavior: image version, device type, mounts, CDI, system services.
    - App behavior: Dockerfile, `wendy.json`, entitlements, environment, startup logs.
-4. If SSH access is available from local instructions or the user, inspect the live device early. Use containerd and `nerdctl`, not Docker.
+4. Use `wendy-device-ops` for CLI-native inspection before SSH when the agent and CLI can still answer the question.
+5. If SSH access is available from local instructions or the user, inspect the live device early. Use containerd and `nerdctl`, not Docker.
+
+## Temporary root SSH
+
+For now, WendyOS devices may allow passwordless SSH as `root@<hostname>`. Treat this as break-glass diagnostic access for gathering evidence and filing issues in `wendylabsinc/wendyos`, not as the default way to mutate bare-metal settings.
+
+Prefer fixes in the app container, `wendy.json`, CLI flow, agent service, or image repo. If you must change device state directly, keep the change minimal, explain why CLI/container paths were insufficient, and do not publish hostnames, credentials, tokens, or device-specific secrets in reusable output.
 
 ## Device facts worth checking
 
@@ -28,8 +35,8 @@ cat /etc/wendyos/device-type 2>/dev/null || true
 cat /etc/os-release 2>/dev/null || true
 systemctl status wendy-agent --no-pager
 journalctl -u wendy-agent -n 200 --no-pager
-sudo nerdctl -n k8s.io ps -a
-sudo nerdctl -n k8s.io logs <container>
+sudo nerdctl -n default ps -a
+sudo nerdctl -n default logs <container>
 test -f /etc/cdi/nvidia.yaml && sed -n '1,160p' /etc/cdi/nvidia.yaml
 ```
 
