@@ -1,11 +1,13 @@
 ---
 name: wendy-project-setup
-description: Use when creating, validating, or repairing a Wendy project scaffold, `wendy.json`, JSON schema setup, or project entitlements with `wendy init`, `wendy json`, or `wendy project entitlements`.
+description: Use when creating, validating, or repairing a Wendy project scaffold, adapting Wendy templates, `wendy.json`, JSON schema setup, or project entitlements with `wendy init`, `wendy json`, or `wendy project entitlements`.
 ---
 
 # Wendy Project Setup Workflow
 
 Use this before app lifecycle work when the repository does not yet have a reliable Wendy project shape.
+
+For new app creation, prefer the `wendy-template-app` workflow first. Search the local `../templates` repo or `wendylabsinc/templates` for a close match before writing a scaffold from scratch.
 
 ## Non-interactive project creation
 
@@ -24,6 +26,8 @@ wendy init --app-id <app-id> --target wendyos --language rust --template simple-
 ```
 
 Template init can still prompt if the selected template has required variables that are not supplied with `--var`. Pass every required template variable, and set `--git-init yes` or `--git-init no`, when the goal is a fully non-interactive agent run.
+
+If the user names an archetype such as `realsense-camera`, `camera-feed`, `camera-feed-yolo`, `voice-assistant`, `audio`, `fullstack`, or `simple-api`, inspect the matching template's `template.json`, `wendy.json`, `Dockerfile`, and source files before creating the destination app.
 
 Project with entitlements:
 
@@ -117,6 +121,7 @@ For I2C, use the device name without `/dev/`, for example `i2c-1`. The runtime e
 
 ## Setup checklist
 
+- Prefer an existing Wendy template before creating an app from scratch.
 - Use `wendy init` for a new project scaffold.
 - Use the `wendy-entitlements` skill when choosing capability details.
 - Keep `appId` stable once a device has deployed the app.

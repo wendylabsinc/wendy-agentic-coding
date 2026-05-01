@@ -34,6 +34,12 @@ Try:
 Use Wendy Agentic Coding to install Wendy CLI, verify my Wendy CLI version, discover my Wendy device, and create a wendy.json for this app.
 ```
 
+Template-first app creation example:
+
+```text
+Use Wendy Agentic Coding to create a Wendy app in ./foo-bar from the realsense-camera template. Search local templates first; if source behavior is unclear, check wendylabsinc/templates before writing code.
+```
+
 ### Claude Code
 
 Add the marketplace and install the plugin:
@@ -53,6 +59,7 @@ Try:
 
 ```text
 /wendy-agentic-coding:wendy-install
+/wendy-agentic-coding:wendy-template
 /wendy-agentic-coding:wendy-project
 /wendy-agentic-coding:wendy-entitlements
 /wendy-agentic-coding:wendy-device-ops
@@ -99,6 +106,8 @@ After the plugin and Wendy CLI are installed:
 4. Run the app in the background: `wendy run --yes --detach --device <hostname>`.
 5. Stream logs or inspect state with the app lifecycle skill.
 
+For new apps, ask the agent to search templates first. The plugin teaches agents to prefer the local `../templates` repo or `wendylabsinc/templates` before hand-writing a scaffold.
+
 ## `wendy.json` Entitlements
 
 Use the `wendy-entitlements` skill when an app needs device access. It is based on the runtime switch in `wendy-agent/go/internal/agent/oci/entitlements.go`.
@@ -139,6 +148,7 @@ Skills:
 
 - `wendy-codebase`: orient on Wendy CLI, agent, gRPC, runtime, and repo layout.
 - `wendy-install`: install and verify Wendy CLI on macOS, Linux, or Windows.
+- `wendy-template-app`: create or adapt Wendy apps from the closest template in `wendylabsinc/templates`.
 - `wendy-project-setup`: initialize projects, validate `wendy.json`, print schema, and manage project entitlements.
 - `wendy-entitlements`: choose and validate `wendy.json` entitlements.
 - `wendy-device-ops`: discover/select devices, inspect version/hardware/WiFi state, update agents, and gather diagnostic evidence.
@@ -151,6 +161,7 @@ Claude Code commands:
 
 - `/wendy-agentic-coding:wendy-orient`
 - `/wendy-agentic-coding:wendy-install`
+- `/wendy-agentic-coding:wendy-template`
 - `/wendy-agentic-coding:wendy-project`
 - `/wendy-agentic-coding:wendy-entitlements`
 - `/wendy-agentic-coding:wendy-device-ops`
@@ -207,8 +218,7 @@ Possible next additions:
 - A safe Claude hook that only verifies `wendy --version` at session start and suggests setup if missing.
 - A high-friction `wendy-os-image` skill for OS download/install/drive flashing, with explicit destructive-action confirmation rules.
 - A `wendy-cloud` skill if Cloud run, auth, tunnels, or remote discovery become common agent workflows.
-- A `wendy-samples` skill for porting or validating apps under the Wendy samples and templates repos.
-- More sample `wendy.json` templates by app type: camera, voice, GPU inference, robotics, sensor, web server.
+- More sample `wendy.json` recipes by app type: robotics, sensors, RealSense variants, and GPU inference.
 - A Codex/Claude eval suite that checks whether the skills choose the right entitlements from app descriptions.
 
 ## Sources Checked

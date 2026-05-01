@@ -3,7 +3,7 @@ description: Create, validate, or repair a Wendy project scaffold and wendy.json
 argument-hint: [app id, language, template, entitlements, schema, or validation target]
 ---
 
-Use the `wendy-project-setup` skill. Set up or validate the Wendy project for:
+Use the `wendy-project-setup` skill. For new app creation, prefer the `wendy-template-app` skill first and search local templates or `wendylabsinc/templates` before writing a scaffold from scratch. Set up or validate the Wendy project for:
 
 `$ARGUMENTS`
 
