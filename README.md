@@ -2,7 +2,7 @@
 
 Shared Codex and Claude Code plugin content for developers building with Wendy.
 
-It teaches agents how the Wendy CLI, `wendy-agent`, WendyOS, `wendy.json`, entitlements, device debugging, and PR workflows actually work.
+It teaches agents how the Wendy CLI, `wendy-agent`, WendyOS, project setup, `wendy.json`, entitlements, app lifecycle commands, device debugging, and PR workflows actually work.
 
 License: Apache-2.0.
 
@@ -48,6 +48,7 @@ Try:
 
 ```text
 /wendy-agentic-coding:wendy-install
+/wendy-agentic-coding:wendy-project
 /wendy-agentic-coding:wendy-entitlements
 /wendy-agentic-coding:wendy-device-debug
 ```
@@ -117,6 +118,7 @@ Skills:
 
 - `wendy-codebase`: orient on Wendy CLI, agent, gRPC, runtime, and repo layout.
 - `wendy-install`: install and verify Wendy CLI on macOS, Linux, or Windows.
+- `wendy-project-setup`: initialize projects, validate `wendy.json`, print schema, and manage project entitlements.
 - `wendy-entitlements`: choose and validate `wendy.json` entitlements.
 - `wendy-app-lifecycle`: build, run, detach, stream logs, manage apps, and clean up volumes.
 - `wendy-device-debug`: debug WendyOS and live-device runtime issues.
@@ -126,6 +128,7 @@ Claude Code commands:
 
 - `/wendy-agentic-coding:wendy-orient`
 - `/wendy-agentic-coding:wendy-install`
+- `/wendy-agentic-coding:wendy-project`
 - `/wendy-agentic-coding:wendy-entitlements`
 - `/wendy-agentic-coding:wendy-build`
 - `/wendy-agentic-coding:wendy-run`
@@ -178,6 +181,10 @@ Possible next additions:
 
 - A Wendy MCP server that exposes `wendy discover`, app logs, and device info as typed tools.
 - A safe Claude hook that only verifies `wendy --version` at session start and suggests setup if missing.
+- A `wendy-device-ops` skill for discovery, defaults, WiFi provisioning, system info, hardware listing, and device updates.
+- A high-friction `wendy-os-image` skill for OS download/install/drive flashing, with explicit destructive-action confirmation rules.
+- A `wendy-cloud` skill if Cloud run, auth, tunnels, or remote discovery become common agent workflows.
+- A `wendy-samples` skill for porting or validating apps under the Wendy samples and templates repos.
 - More sample `wendy.json` templates by app type: camera, voice, GPU inference, robotics, sensor, web server.
 - A Codex/Claude eval suite that checks whether the skills choose the right entitlements from app descriptions.
 

@@ -36,9 +36,12 @@ If multiple project markers exist, avoid interactive build pickers:
 
 ```bash
 wendy build --build-type docker --device <hostname>
+wendy build --build-type compose --device <hostname>
 wendy build --build-type swift --device <hostname>
 wendy build --build-type python --device <hostname>
 ```
+
+Accepted build types are `docker`, `compose`, `swift`, and `python`. Current CLI help text may lag and omit `compose`, but the build/run code accepts it when a Compose file is present.
 
 Important: `wendy build` has a global `--json` flag available from the root command, but the build command does not currently produce structured JSON output. Do not rely on JSON parsing for build success. Use exit status and the text output.
 
@@ -66,6 +69,7 @@ Force a build type:
 
 ```bash
 wendy run --yes --build-type docker --device <hostname>
+wendy run --yes --build-type compose --device <hostname>
 wendy run --yes --build-type swift --device <hostname>
 wendy run --yes --build-type python --device <hostname>
 ```
@@ -76,12 +80,18 @@ Other useful flags:
 wendy run --yes --prefix ./path/to/app --device <hostname>
 wendy run --yes --product MySwiftProduct --device <hostname>
 wendy run --yes --user-args foo,bar --device <hostname>
+wendy run --yes --user-args foo --user-args bar --device <hostname>
+wendy run --yes --debug --device <hostname>
 wendy run --yes --restart-unless-stopped --detach --device <hostname>
 wendy run --yes --restart-on-failure --detach --device <hostname>
 wendy run --yes --no-restart --device <hostname>
 ```
 
 Attached `wendy run` starts the container and streams output. Ctrl+C stops the container. Detached `wendy run --detach` starts the container, waits for readiness when configured, fires post-start hooks, and exits.
+
+`--deploy` creates the container but does not start it. To start that existing app later, use `wendy device apps start <app-id>`, knowing that the current agent-backed start path attaches to the app stream. There is no `wendy device apps start --detach` flag.
+
+`--user-args` is repeatable and also accepts comma-separated values. Prefer repeated flags when values could contain commas.
 
 ## Stream logs
 
@@ -90,6 +100,8 @@ For app logs, prefer JSON records when the next step is machine analysis:
 ```bash
 wendy --json device logs --app <app-id> --device <hostname>
 wendy --json device logs --app <app-id> --level info --device <hostname>
+wendy --json device logs --app <app-id> --service <service-name> --level warn --device <hostname>
+wendy --json device logs --app <app-id> --min-severity 9 --device <hostname>
 ```
 
 `device logs` is a stream. When an agent needs a bounded sample, run it with a timeout:
@@ -105,9 +117,10 @@ For structured telemetry streams:
 ```bash
 wendy device telemetry-stream --logs --app <app-id> --device <hostname>
 wendy device telemetry-stream --logs --metrics --app <app-id> --device <hostname>
+wendy device telemetry-stream --app <app-id> --service <service-name> --device <hostname>
 ```
 
-`telemetry-stream` emits JSONL by design. It does not need `--json`.
+`telemetry-stream` emits JSONL by design. It does not need `--json`. If none of `--logs`, `--metrics`, or `--traces` is set, the command enables all three streams.
 
 ## Manage apps
 
@@ -179,6 +192,7 @@ Known non-interactive guidance:
 - `wendy run` uses progress UI in an interactive TTY and plain progress text otherwise. It does not currently provide structured JSON output.
 - `wendy run --yes` avoids app-config creation prompts where possible.
 - `--json` also prevents device picker fallback; if no device/default is configured, pass `--device` or set a default first.
+- `device apps start|stop|remove` and `device volumes remove` can prompt for a name if omitted; pass the app or volume name explicitly in agent workflows.
 
 ## Operator flow
 
