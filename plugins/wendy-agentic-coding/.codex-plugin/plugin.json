@@ -1,6 +1,6 @@
 {
   "name": "wendy-agentic-coding",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Reusable Wendy CLI, wendy-agent, WendyOS, project setup, wendy.json, entitlement, device ops, MCP, app lifecycle, and device debugging workflows for Codex.",
   "author": {
     "name": "Wendy Labs",
@@ -44,6 +44,8 @@
       "Use Wendy Agentic Coding to debug this WendyOS device runtime issue from logs to root cause.",
       "Use Wendy Agentic Coding to prepare a Wendy PR with the right tests and review cleanup."
     ],
-    "brandColor": "#10A37F"
+    "brandColor": "#10A37F",
+    "composerIcon": "./assets/wendy_social_logo.png",
+    "logo": "./assets/wendy_social_logo.png"
   }
 }
