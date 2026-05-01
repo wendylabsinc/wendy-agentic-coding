@@ -13,6 +13,8 @@ Installing this plugin must not silently install Wendy CLI. Treat Wendy CLI inst
 
 Do not run an OS-level installer if `wendy --version` already works unless the user explicitly asks to reinstall or upgrade.
 
+For the full plugin workflow, including `wendy mcp` and `wendy device hardware`, require Wendy CLI `2026.04.30-211221` or newer. If the installed version is older, tell the user which workflow is blocked and recommend updating the CLI before using MCP or hardware inspection.
+
 ## Detect the host
 
 Use the current OS, not assumptions:

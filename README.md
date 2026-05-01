@@ -8,6 +8,11 @@ License: Apache-2.0.
 
 ## Quick Start
 
+Full Wendy agentic-coding setup has two parts:
+
+1. Install this plugin into Codex or Claude Code.
+2. Install or update the Wendy CLI, then verify device discovery.
+
 ### Codex
 
 Add this repo as a Codex marketplace:
@@ -26,7 +31,7 @@ codex
 Try:
 
 ```text
-Use Wendy Agentic Coding to set up Wendy CLI and create a wendy.json for this app.
+Use Wendy Agentic Coding to install Wendy CLI, verify my Wendy CLI version, discover my Wendy device, and create a wendy.json for this app.
 ```
 
 ### Claude Code
@@ -59,6 +64,8 @@ Try:
 
 The plugin does not silently install the Wendy CLI when you install the plugin. That is intentional: installing system tools should remain an explicit agent action so the developer can see and approve the command.
 
+For the full plugin workflow, including Wendy MCP and hardware inspection, use Wendy CLI `2026.04.30-211221` or newer. Older CLI builds can still support basic install, discovery, build, and run flows, but may not include commands such as `wendy mcp` or `wendy device hardware`.
+
 After the plugin is installed, ask Codex or Claude Code to set up Wendy. The agent should detect the OS, check whether `wendy` is already installed, and then use the right command:
 
 macOS / Linux:
@@ -79,6 +86,18 @@ Verification:
 wendy --version
 wendy discover --json
 ```
+
+If `wendy --version` is older than `2026.04.30-211221`, update Wendy before using the MCP or hardware skills. If a package manager has not caught up to the latest Wendy release, install the latest CLI release from <https://github.com/wendylabsinc/wendy-agent/releases>.
+
+## First App Checklist
+
+After the plugin and Wendy CLI are installed:
+
+1. Confirm the CLI is available: `wendy --version`.
+2. Confirm a device is reachable: `wendy discover --json`.
+3. Ask the agent to create or validate `wendy.json` for the app.
+4. Run the app in the background: `wendy run --yes --detach --device <hostname>`.
+5. Stream logs or inspect state with the app lifecycle skill.
 
 ## `wendy.json` Entitlements
 
