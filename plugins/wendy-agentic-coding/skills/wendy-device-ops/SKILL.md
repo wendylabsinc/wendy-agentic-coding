@@ -44,13 +44,13 @@ wendy --json device version --check-updates --device <hostname>
 Hardware capabilities:
 
 ```bash
-wendy --json hardware list --device <hostname>
-wendy --json hardware list --category gpu --device <hostname>
-wendy --json hardware list --category camera --device <hostname>
-wendy --json hardware list --category audio --device <hostname>
+wendy --json device hardware list --device <hostname>
+wendy --json device hardware list --category gpu --device <hostname>
+wendy --json device hardware list --category camera --device <hostname>
+wendy --json device hardware list --category audio --device <hostname>
 ```
 
-Use the output to decide entitlements before guessing. For example, check `hardware list --category camera` before adding camera-specific assumptions to an app.
+Use the output to decide entitlements before guessing. For example, check `device hardware list --category camera` before adding camera-specific assumptions to an app.
 
 ## WiFi operations
 

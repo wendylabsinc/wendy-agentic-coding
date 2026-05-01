@@ -58,7 +58,7 @@ Before blaming MCP, verify device access directly with `wendy-device-ops`:
 
 ```bash
 wendy --json device version --device <hostname>
-wendy --json hardware list --device <hostname>
+wendy --json device hardware list --device <hostname>
 ```
 
 If `wendy mcp serve` logs a warning that it could not connect to a device, set a default device or configure the MCP host to launch `wendy mcp serve --device <hostname>`.
