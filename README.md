@@ -118,6 +118,7 @@ Skills:
 - `wendy-codebase`: orient on Wendy CLI, agent, gRPC, runtime, and repo layout.
 - `wendy-install`: install and verify Wendy CLI on macOS, Linux, or Windows.
 - `wendy-entitlements`: choose and validate `wendy.json` entitlements.
+- `wendy-app-lifecycle`: build, run, detach, stream logs, manage apps, and clean up volumes.
 - `wendy-device-debug`: debug WendyOS and live-device runtime issues.
 - `wendy-pr-workflow`: prepare, validate, publish, and clean up Wendy PRs.
 
@@ -126,6 +127,10 @@ Claude Code commands:
 - `/wendy-agentic-coding:wendy-orient`
 - `/wendy-agentic-coding:wendy-install`
 - `/wendy-agentic-coding:wendy-entitlements`
+- `/wendy-agentic-coding:wendy-build`
+- `/wendy-agentic-coding:wendy-run`
+- `/wendy-agentic-coding:wendy-logs`
+- `/wendy-agentic-coding:wendy-apps`
 - `/wendy-agentic-coding:wendy-device-debug`
 - `/wendy-agentic-coding:wendy-pr`
 

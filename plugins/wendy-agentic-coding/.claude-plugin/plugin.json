@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "wendy-agentic-coding",
-  "description": "Reusable Wendy CLI, wendy-agent, WendyOS, wendy.json, entitlement, and device debugging workflows for Claude Code.",
-  "version": "0.2.0",
+  "description": "Reusable Wendy CLI, wendy-agent, WendyOS, wendy.json, entitlement, app lifecycle, and device debugging workflows for Claude Code.",
+  "version": "0.3.0",
   "author": {
     "name": "Wendy Labs",
     "url": "https://github.com/wendylabsinc"
@@ -15,6 +15,7 @@
     "wendyos",
     "wendy-json",
     "entitlements",
+    "build-run",
     "agentic-coding",
     "claude-code"
   ],
