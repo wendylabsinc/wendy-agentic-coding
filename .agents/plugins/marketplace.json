@@ -1,7 +1,7 @@
 {
   "name": "wendy-agentic-coding",
   "interface": {
-    "displayName": "Wendy Agentic Coding"
+    "displayName": "Wendy"
   },
   "plugins": [
     {

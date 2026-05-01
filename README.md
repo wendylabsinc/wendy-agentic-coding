@@ -1,4 +1,4 @@
-# Wendy Agentic Coding
+# Wendy
 
 Shared Codex and Claude Code plugin content for developers building with Wendy.
 
@@ -31,13 +31,13 @@ codex
 Try:
 
 ```text
-Use Wendy Agentic Coding to install Wendy CLI, verify my Wendy CLI version, discover my Wendy device, and create a wendy.json for this app.
+Use @Wendy to install Wendy CLI, verify my Wendy CLI version, discover my Wendy device, and create a wendy.json for this app.
 ```
 
 Template-first app creation example:
 
 ```text
-Use Wendy Agentic Coding to create a Wendy app in ./foo-bar from the realsense-camera template. Search local templates first; if source behavior is unclear, check wendylabsinc/templates before writing code.
+Use @Wendy to create a Wendy app in ./foo-bar from the realsense-camera template. Search local templates first; if source behavior is unclear, check wendylabsinc/templates before writing code.
 ```
 
 ### Claude Code
