@@ -61,3 +61,7 @@ Pass every required `template.json` variable with `--var`; otherwise the command
 ## RealSense note
 
 For a prompt like "make me a Wendy app with the realsense-camera app in ./foo-bar", first look for `python/realsense-camera` in `wendylabsinc/templates`. Its template declares `APP_ID` and `PORT` variables and uses USB plus host networking for the RealSense multi-stream viewer.
+
+## ROS 2 note
+
+For a ROS 2 archetype (e.g. a talker/listener graph), build a multi-service app: one Dockerfile per service `FROM ros:<distro>` with nodes and the RMW installed via `apt` (no colcon needed for prebuilt nodes), a `services` map with `dependsOn` ordering, top-level `frameworks.ros2`, and `isolation: "shared-ipc"` for intra-host zero-copy. See [wendy-ros2] for the full config and the `wendy device ros2` debugging CLI.
