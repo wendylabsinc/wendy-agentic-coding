@@ -17,6 +17,8 @@ wendy discover --json --type usb --timeout 5s
 wendy discover --json --type lan --timeout 5s
 ```
 
+`--type` accepts `usb`, `lan`, `bluetooth`, `external`, or `all` (default `all`).
+
 Use explicit hostnames when possible:
 
 ```bash
@@ -51,6 +53,14 @@ wendy --json device hardware list --category audio --device <hostname>
 ```
 
 Use the output to decide entitlements before guessing. For example, check `device hardware list --category camera` before adding camera-specific assumptions to an app.
+
+Live metrics (CPU, memory, GPU util/temp/power, per-container usage) with a one-shot JSON snapshot for agents:
+
+```bash
+wendy --json device top --device <hostname>
+```
+
+`device top` renders an interactive dashboard in a TTY; `--json` (or any non-TTY context) prints a single snapshot instead. `wendy device dashboard` opens a combined live metrics+logs TUI — avoid it in agent workflows.
 
 ## WiFi operations
 
@@ -120,3 +130,4 @@ Prefer changing app containers, `wendy.json`, or repo code over changing bare-me
 - Use `wendy-app-lifecycle` for build, run, logs, app start/stop/remove, and volumes.
 - Use `wendy-device-debug` when the root cause spans CLI, agent, WendyOS image state, containerd, or app behavior.
 - Use `wendy-mcp-setup` when the user wants AI tools to access Wendy device operations through MCP.
+- Use `wendy-ros2` for inspecting live ROS 2 systems on a device (`wendy device ros2 nodes|topics|echo|hz|bag|...`).

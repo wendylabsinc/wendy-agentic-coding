@@ -36,12 +36,11 @@ If multiple project markers exist, avoid interactive build pickers:
 
 ```bash
 wendy build --build-type docker --device <hostname>
-wendy build --build-type compose --device <hostname>
 wendy build --build-type swift --device <hostname>
 wendy build --build-type python --device <hostname>
 ```
 
-Accepted build types are `docker`, `compose`, `swift`, and `python`. Current CLI help text may lag and omit `compose`, but the build/run code accepts it when a Compose file is present.
+Accepted `--build-type` values are `docker`, `swift`, and `python`. There is no `compose` build type: a Docker Compose project (`docker-compose.yml`/`compose.yml`) is auto-detected, and a `services` map in `wendy.json` triggers the multi-service path. Use `--builder docker|apple-container` to force the image builder for Dockerfile/Containerfile builds.
 
 Important: `wendy build` has a global `--json` flag available from the root command, but the build command does not currently produce structured JSON output. Do not rely on JSON parsing for build success. Use exit status and the text output.
 
@@ -65,11 +64,10 @@ Deploy only, create the container but do not start it:
 wendy run --yes --deploy --device <hostname>
 ```
 
-Force a build type:
+Force a build type (`docker`, `swift`, or `python` — no `compose`):
 
 ```bash
 wendy run --yes --build-type docker --device <hostname>
-wendy run --yes --build-type compose --device <hostname>
 wendy run --yes --build-type swift --device <hostname>
 wendy run --yes --build-type python --device <hostname>
 ```
@@ -79,6 +77,7 @@ Other useful flags:
 ```bash
 wendy run --yes --prefix ./path/to/app --device <hostname>
 wendy run --yes --product MySwiftProduct --device <hostname>
+wendy run --yes --builder docker --device <hostname>
 wendy run --yes --user-args foo,bar --device <hostname>
 wendy run --yes --user-args foo --user-args bar --device <hostname>
 wendy run --yes --debug --device <hostname>
@@ -87,9 +86,29 @@ wendy run --yes --restart-on-failure --detach --device <hostname>
 wendy run --yes --no-restart --device <hostname>
 ```
 
+Multi-service flags (a `wendy.json` with a `services` map):
+
+```bash
+wendy run --yes --service <service-name> --device <hostname>
+wendy run --yes --keep-going --device <hostname>
+wendy run --yes --max-concurrency 2 --device <hostname>
+wendy run --yes --chunking auto --device <hostname>
+```
+
+`--service` builds and runs only that service and its `dependsOn` graph. `--keep-going` deploys the services that build successfully instead of aborting the whole group on the first failure. `--max-concurrency` caps parallel image builds (`0` = auto). `--chunking auto|force|off` controls the content-defined-chunking deploy path.
+
+Watch mode redeploys on file changes and runs detached (`wendy watch` is the same as `wendy run --watch`):
+
+```bash
+wendy run --yes --watch --device <hostname>
+wendy run --yes --watch --debounce 400 --verbose --device <hostname>
+```
+
 Attached `wendy run` starts the container and streams output. Ctrl+C stops the container. Detached `wendy run --detach` starts the container, waits for readiness when configured, fires post-start hooks, and exits.
 
-`--deploy` creates the container but does not start it. To start that existing app later, use `wendy device apps start <app-id>`, knowing that the current agent-backed start path attaches to the app stream. There is no `wendy device apps start --detach` flag.
+`--deploy` creates the container but does not start it. To start that existing app later, use `wendy device apps start <app-id>`, which attaches to the app output stream by default. Pass `-d`/`--detach` to start without streaming and return control immediately; `device apps start` also applies an `unless-stopped` restart policy.
+
+Multi-service run: images build in parallel (throttled by `--max-concurrency`), containers deploy in `dependsOn` topological order, and attached logs are prefixed with `[serviceName]`. Ctrl+C stops all services in reverse dependency order with a graceful shutdown window. Multi-service and Compose runs are unsupported on `darwin` targets.
 
 `--user-args` is repeatable and also accepts comma-separated values. Prefer repeated flags when values could contain commas.
 
@@ -136,7 +155,13 @@ Start an existing app by name:
 wendy device apps start <app-id> --device <hostname>
 ```
 
-Current behavior: `device apps start` attaches to the app output stream. For a long-running app where the agent must regain control, prefer `wendy run --detach` for a fresh deploy/start, or start the app in a bounded/background shell and then inspect logs.
+Current behavior: `device apps start` attaches to the app output stream by default. For a long-running app where the agent must regain control, pass `-d`/`--detach` (starts without streaming), or use `wendy run --detach` for a fresh deploy/start.
+
+Start an existing app detached:
+
+```bash
+wendy device apps start <app-id> --detach --device <hostname>
+```
 
 Stop an app:
 

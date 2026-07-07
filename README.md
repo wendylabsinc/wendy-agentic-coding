@@ -138,9 +138,12 @@ Rules of thumb:
 - Use `network` with `mode: "host"` for servers, WebRTC, callbacks, and debugger ports.
 - Use `persist` for model caches, app state, databases, uploaded files, and generated assets.
 - Use `gpu` only when the app is built for NVIDIA/Jetson acceleration and the device image has CDI set up.
-- Use `audio`, `camera`, `bluetooth`, `usb`, `i2c`, `gpio`, `spi`, and `input` only when the app actually needs those host devices.
-- For `i2c`, include `device`, for example `{ "type": "i2c", "device": "i2c-1" }`.
+- Use `audio`, `camera`, `display`, `bluetooth`, `usb`, `serial`, `i2c`, `gpio`, `spi`, and `input` only when the app actually needs those host devices.
+- For `i2c`, include `device`, for example `{ "type": "i2c", "device": "i2c-1" }` (bare `i2c-N`, not a `/dev/` path).
+- For `serial`, `device` is a bare USB tty node such as `ttyACM0`/`ttyUSB0`.
 - For `gpio`, optional `pins` are documentation/validation; runtime access is chip-level.
+- Use `mcp` (requires `port`) to expose a container as an MCP server; use `admin` only for fully-trusted first-party apps (unauthenticated local device control).
+- For multi-service and ROS 2 apps, use the top-level `isolation` and `frameworks.ros2` keys; see the `wendy-ros2` skill.
 
 ## What It Includes
 
@@ -154,6 +157,7 @@ Skills:
 - `wendy-device-ops`: discover/select devices, inspect version/hardware/WiFi state, update agents, and gather diagnostic evidence.
 - `wendy-mcp-setup`: configure and explain the Wendy CLI MCP server for AI assistants.
 - `wendy-app-lifecycle`: build, run, detach, stream logs, manage apps, and clean up volumes.
+- `wendy-ros2`: configure `frameworks.ros2`, DDS networking/isolation, and inspect live ROS 2 systems with `wendy device ros2`.
 - `wendy-device-debug`: debug WendyOS and live-device runtime issues.
 - `wendy-pr-workflow`: prepare, validate, publish, and clean up Wendy PRs.
 
@@ -170,6 +174,7 @@ Claude Code commands:
 - `/wendy-agentic-coding:wendy-run`
 - `/wendy-agentic-coding:wendy-logs`
 - `/wendy-agentic-coding:wendy-apps`
+- `/wendy-agentic-coding:wendy-ros2`
 - `/wendy-agentic-coding:wendy-device-debug`
 - `/wendy-agentic-coding:wendy-pr`
 
