@@ -37,7 +37,7 @@ wendy --version
 macOS and Linux:
 
 ```bash
-curl -fsSL https://install.wendy.sh/cli.sh | bash
+curl -fsSL https://install.wendy.dev/cli.sh | bash
 ```
 
 Windows:

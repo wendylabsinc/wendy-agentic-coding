@@ -78,7 +78,7 @@ After the plugin is installed, ask Codex or Claude Code to set up Wendy. The age
 macOS / Linux:
 
 ```bash
-curl -fsSL https://install.wendy.sh/cli.sh | bash
+curl -fsSL https://install.wendy.dev/cli.sh | bash
 ```
 
 Windows:
