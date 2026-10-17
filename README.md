@@ -169,7 +169,8 @@ Claude Code commands: `wendy-apps`, `wendy-build`, `wendy-data`,
 `wendy-project`, `wendy-robot-deploy`, `wendy-run`, and `wendy-template`, each
 under `/wendy-agentic-coding:`.
 
-The Claude Code plugin also starts the Wendy MCP server (`wendy mcp serve`) and
+The Claude Code plugin also connects to the hosted Wendy MCP server
+(`https://mcp.wendy.dev`) and
 runs a SessionStart hook that reports the installed CLI version in Wendy
 projects. See the [plugin README](plugins/wendy-agentic-coding/README.md).
 
