@@ -17,3 +17,11 @@ When changing marketplace metadata, keep both:
 
 - `.agents/plugins/marketplace.json`
 - `.claude-plugin/marketplace.json`
+
+## Documentation
+
+Official Wendy Labs documentation lives at https://docs.wendy.dev. Consult it when working on Wendy features, APIs, or concepts not covered by the skills in this repo.
+
+## Updating Skills
+
+Skills live in `plugins/wendy-agentic-coding/skills/`. To create or improve a skill, use the `skill-creator` skill — invoke it via the Skill tool with `skill-creator:skill-creator`. It walks through drafting, testing, evaluating, and iterating on skills. After editing a skill's SKILL.md, run description optimization to keep triggering accurate.

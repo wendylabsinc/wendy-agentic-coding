@@ -119,6 +119,45 @@ If the user installed the optional `wendy-agentic-coding` plugin instead, update
 it through the assistant's plugin manager. Avoid installing both copies of the
 same skills. Do not send end-users to the internal `claude-skills` collection.
 
+## Update
+
+### Wendy CLI
+
+Re-run the installer to upgrade in-place:
+
+macOS and Linux:
+```bash
+curl -fsSL https://install.wendy.sh/cli.sh | bash
+```
+
+Windows:
+```powershell
+winget upgrade WendyLabs.Wendy --source winget
+```
+
+After updating, verify the version meets the minimum requirement:
+```bash
+wendy --version
+```
+
+### Wendy MCP
+
+After a CLI update, reconfigure the MCP server so AI tools pick up the updated binary:
+```bash
+wendy mcp setup
+```
+
+Then restart or reload the target AI tool (Claude Code, Claude Desktop).
+
+### Plugin skills
+
+To get the latest skills and commands in Claude Code:
+```
+claude plugins update wendy-agentic-coding
+```
+
+For Codex, reinstall from the plugin source at `https://github.com/wendylabsinc/wendy-agentic-coding`.
+
 ## Common follow-up
 
 For first-time ChatGPT users, explain Wendy in one sentence and return to
