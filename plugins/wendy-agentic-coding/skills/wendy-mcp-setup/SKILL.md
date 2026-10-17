@@ -1,6 +1,6 @@
 ---
 name: wendy-mcp-setup
-description: Use when configuring, verifying, or explaining the Wendy CLI MCP server for AI assistants with `wendy mcp setup` or `wendy mcp serve`, especially Claude Code, Claude Desktop, Codex, or device-tool access.
+description: Use when configuring, verifying, or explaining the Wendy CLI MCP server for AI assistants with `wendy mcp setup` or `wendy mcp serve`, especially Claude Code, Claude Desktop, Codex, Hermes Agent, or device-tool access.
 ---
 
 # Wendy MCP Setup Workflow
