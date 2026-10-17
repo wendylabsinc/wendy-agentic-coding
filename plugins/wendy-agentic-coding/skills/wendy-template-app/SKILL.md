@@ -11,7 +11,7 @@ Prefer adapting known Wendy templates before hand-writing a new scaffold. If the
 
 Search in this order:
 
-1. Local sibling repo: `../templates` from a Wendy workspace, or `/Users/maximilianalexander/wendylabsinc/templates` when available.
+1. Local sibling repo: `../templates` from a Wendy workspace.
 2. A `templates/` directory in the current workspace.
 3. GitHub repo `wendylabsinc/templates` if local source is missing or stale.
 
@@ -19,10 +19,10 @@ Useful searches:
 
 ```bash
 rg -n "realsense|camera|yolo|voice|audio|fullstack|simple-api" ../templates
-find ../templates -name template.json -o -name wendy.json -o -name Dockerfile
+rg --files ../templates -g template.json -g wendy.json -g Dockerfile -g Containerfile
 ```
 
-Read the candidate template's `template.json`, `wendy.json`, `Dockerfile`, and main source files before copying or rewriting code. Use `meta.json` to discover template names and descriptions when present.
+Read the candidate template's `template.json`, `wendy.json`, `Dockerfile` or `Containerfile`, and main source files before copying or rewriting code. Use `meta.json` to discover template names and descriptions when present.
 
 If no local templates repo is available, clone or inspect the GitHub source in a temporary location before building:
 
@@ -38,6 +38,7 @@ When the template is available through `wendy init`, prefer explicit non-interac
 mkdir -p <destination>
 cd <destination>
 wendy init \
+  --here \
   --app-id <app-id> \
   --target wendyos \
   --language <language> \
@@ -48,11 +49,11 @@ wendy init \
   --git-init no
 ```
 
-Pass every required `template.json` variable with `--var`; otherwise the command may prompt. If `wendy init` cannot express the needed customization, copy the closest template into the requested destination and adapt it directly.
+`--here` keeps the scaffold in the directory just created; without it, `--app-id` creates another subdirectory. Pass every required `template.json` variable with `--var`; otherwise the command may prompt. If `wendy init` cannot express the needed customization, copy the closest template into the requested destination and adapt it directly. Verify that `<destination>/wendy.json` exists before building.
 
 ## Adapt safely
 
-- Preserve the template's proven Dockerfile, entrypoint, readiness probe, hooks, and entitlements unless the requested app needs a real change.
+- Preserve the template's proven Dockerfile/Containerfile, entrypoint, readiness probe, hooks, and entitlements unless the requested app needs a real change.
 - Validate `wendy.json` after edits.
 - If hardware is involved, use `wendy-device-ops` to inspect device capabilities before changing entitlements.
 - If source behavior is unclear, inspect `wendylabsinc/templates` before inventing a replacement.
@@ -61,7 +62,3 @@ Pass every required `template.json` variable with `--var`; otherwise the command
 ## RealSense note
 
 For a prompt like "make me a Wendy app with the realsense-camera app in ./foo-bar", first look for `python/realsense-camera` in `wendylabsinc/templates`. Its template declares `APP_ID` and `PORT` variables and uses USB plus host networking for the RealSense multi-stream viewer.
-
-## ROS 2 note
-
-For a ROS 2 archetype (e.g. a talker/listener graph), build a multi-service app: one Dockerfile per service `FROM ros:<distro>` with nodes and the RMW installed via `apt` (no colcon needed for prebuilt nodes), a `services` map with `dependsOn` ordering, top-level `frameworks.ros2`, and `isolation: "shared-ipc"` for intra-host zero-copy. See [wendy-ros2] for the full config and the `wendy device ros2` debugging CLI.

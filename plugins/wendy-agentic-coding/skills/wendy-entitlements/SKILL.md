@@ -1,11 +1,18 @@
 ---
 name: wendy-entitlements
-description: Use when creating, reviewing, or debugging `wendy.json` entitlements for Wendy apps, especially device access, networking, persistence, GPU, audio, camera, display, Bluetooth, USB, serial, I2C, GPIO, SPI, input, MCP, or admin, and for multi-service `isolation` and `frameworks`.
+description: Use when creating, reviewing, or debugging `wendy.json` entitlements for Wendy apps, especially device access, networking, persistence, GPU, audio, camera, Bluetooth, USB, I2C, GPIO, SPI, serial, input, or MCP devices.
 ---
 
 # Wendy Entitlements Workflow
 
-Use this for any task involving `wendy.json` capabilities. Base recommendations on the runtime behavior in `wendy-agent/go/internal/agent/oci/entitlements.go` and validation in `wendy-agent/go/internal/shared/appconfig/appconfig.go`.
+Use this for an application's `wendy.json` capabilities. Check the installed CLI's
+`wendy json --help`, validate the app with `wendy json validate`, and inspect the
+selected device's hardware with `wendy-device-ops`. End-users do not need a Wendy
+source checkout to configure an app.
+
+## Platform scope
+
+Entitlements apply to containerized platforms (`linux`/`wendyos` and `wendy-lite`). Darwin (native macOS) apps run non-containerized and do not use WendyOS container entitlements.
 
 ## Start from app needs
 
@@ -13,50 +20,71 @@ Ask what the app actually touches, then choose the smallest entitlement set:
 
 - Server, WebRTC, callbacks, debugger, or LAN-visible API: `network`.
 - NVIDIA/Jetson inference or CUDA: `gpu`.
+- Present to a locally-attached monitor as a Wayland client: `display`.
 - Microphone, speaker, ALSA, PipeWire, PulseAudio compatibility: `audio`.
 - V4L2 cameras or USB webcams: `camera`.
-- Draw to a locally-attached monitor as a Wayland client: `display`.
 - Model cache, database, user uploads, generated files, or persistent app state: `persist`.
 - BlueZ Bluetooth access: `bluetooth`.
 - Raw USB devices: `usb`.
-- USB serial tty (servo buses, sensors, microcontrollers): `serial`.
 - I2C bus devices: `i2c`.
 - GPIO chips: `gpio`.
 - SPI devices: `spi`.
+- Serial ports (USB-serial adapters, servo buses): `serial`.
 - HID/input event devices: `input`.
-- Expose the container as an MCP server: `mcp`.
-- Full unauthenticated local device control (trusted first-party only): `admin`.
+- MCP tool servers: `mcp`.
+- Wendy Data events, predictions, or recording streams: `episode-write`.
+- Full local device control (app orchestration, reading all device data): `admin`.
 
 Prefer no entitlement when the app does not need the host resource.
 
-ROS 2 apps use the top-level `frameworks.ros2` block plus `network` (host) and, for intra-host zero-copy, `isolation` — not a dedicated entitlement. See [wendy-ros2] and the multi-service section below.
-
 ## Supported entitlements
 
-Use this table as the starting point, then verify against the local repo when changing runtime behavior:
+Use this table as the starting point, then verify against the selected device's
+capabilities and installed CLI validation:
 
 | Type | Required keys | Common optional keys | Runtime effect |
 | --- | --- | --- | --- |
-| `network` | none | `mode` as `host`, `host-admin`, or `none` | Defaults to host networking when `mode` is empty; `host` removes the network namespace and mounts host DNS config; `host-admin` does the same and additionally adds `CAP_NET_ADMIN`. Plain `host` no longer grants `CAP_NET_ADMIN`. |
-| `gpu` | none | none | Adds NVIDIA device nodes, NVIDIA env vars (`NVIDIA_VISIBLE_DEVICES=all`), and relies on CDI for full Jetson/NVIDIA library/device wiring. On Raspberry Pi it instead binds `/dev/vcio` (VideoCore mailbox) for board telemetry. |
+| `network` | none | `mode` as `host` or `none` | Defaults to host networking when `mode` is empty; `host` removes the network namespace and mounts host DNS config. |
+| `http` | `port` | none | Declares the app's HTTP port for clients and VM forwarding; the app must listen on that port. It does not start a server or establish readiness. |
+| `gpu` | none | none | Jetson: adds NVIDIA device nodes, env vars, CDI wiring. Raspberry Pi: exposes `/dev/vcio` for board telemetry. |
+| `display` | none | none | Grants `/dev/dri` (GPU render nodes) and the WendyOS compositor's Wayland socket; allows the container to present to a locally-attached monitor as a Wayland client. Requires a display-enabled WendyOS image; on headless images the socket is absent so nothing renders. On Jetson, GPU graphics userspace is injected from the host via CDI. At most one per app. |
 | `audio` | none | none | Adds audio group, mounts `/dev/snd`, allows sound devices, and mounts PipeWire/Pulse sockets when present. |
-| `camera` | none | `mode`, `allowlist` | Canonical V4L2/camera entitlement; allows major 81 and bind-mounts host `/dev` for live camera hotplug. `mode`/`allowlist` are accepted only for backward-compatibility with the deprecated `video` entitlement and have no runtime effect today. |
+| `camera` | none | `mode`, `allowlist` | Canonical V4L2/camera entitlement; allows major 81, bind-mounts host `/dev` for live camera hotplug, and bind-mounts `/run/udev` read-only for libcamera CSI enumeration. |
 | `video` | none | `mode`, `allowlist` | Deprecated compatibility alias for `camera`; prefer `camera` in new configs. |
-| `display` | none | none | Presents to a locally-attached monitor as a Wayland client: mounts `/dev/dri`, adds `video`+`render` groups, and mounts the WendyOS compositor's Wayland socket (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`). At most one per app; requires a display-enabled WendyOS image (headless images accept it but render nothing). |
-| `persist` | `name`, `path` | none | Creates/binds `/var/lib/wendy/volumes/<name>` to the container `path`; volume names are a shared namespace across apps. |
-| `bluetooth` | none | `mode` | Uses a filtered `xdg-dbus-proxy` socket for BlueZ; sets `DBUS_SYSTEM_BUS_ADDRESS`. Do not assume unrestricted host D-Bus access. `mode` is accepted; docs describe `bluez` (D-Bus profiles) vs `kernel` (raw HCI, extra caps), but confirm the target agent version before relying on `kernel`. |
+| `persist` | `name`, `path` | none | Creates/binds `/var/lib/wendy/volumes/<name>` to the container `path`; volume names are shared across apps. Linux/WendyOS mounts are `noexec`. |
+| `bluetooth` | none | `mode` | Uses a filtered `xdg-dbus-proxy` socket for BlueZ. Do not assume unrestricted host D-Bus access. |
 | `usb` | none | none | Mounts `/dev/bus/usb` and allows USB character devices. |
-| `serial` | `device` | none | Binds the USB serial tty `/dev/<device>` at its exact major:minor and adds the `dialout` group. `device` is a bare node name matching `ttyACM<n>` or `ttyUSB<n>` (USB only — on-board UARTs like `ttyAMA`/`ttyS` are not supported), not a path. |
-| `i2c` | `device` | none | Binds `/dev/<device>` and allows I2C devices. `device` must be in bare `i2c-N` form (e.g. `i2c-1`); the validator rejects a `/dev/`-prefixed path. |
+| `i2c` | `device` | none | Binds `/dev/<device>` such as `/dev/i2c-1` and allows I2C devices. |
 | `gpio` | none | `pins` | Mounts existing `/dev/gpiochip0` through `/dev/gpiochip7`; `pins` are documentation/validation, access is chip-level. |
 | `spi` | none | none | Mounts existing `/dev/spidev*` nodes and adds the host `spi` group when present. |
-| `input` | none | none | Adds input group (GID 105), mounts `/dev/input`, and allows input event devices (major 13). |
-| `mcp` | `port` | none | Registers the container as an MCP server on `port` (1–65535); recorded on container label `sh.wendy/mcp.port`. At most one per app. Accepted by `wendy json validate` even though it may not appear in `wendy json schema` output. |
-| `admin` | none | none | Bind-mounts the agent's unix control socket into the container (`WENDY_AGENT_SOCKET`), granting full **unauthenticated** local control of the device (start/stop/remove apps, read all device data). This mount is the entire trust boundary — grant only to fully-trusted first-party apps. At most one per app; never reachable off-device. |
+| `input` | none | none | Adds input group, mounts `/dev/input`, and allows input event devices. |
+| `serial` | `device` | none | Binds `/dev/<device>` (e.g. `/dev/ttyACM0`) and adds the `dialout` group. USB-only; on-board UARTs (`ttyAMA*`, `ttyS*`) are not supported. |
+| `mcp` | `port` | none | Exposes an MCP server port for agentic tool access. |
+| `episode-write` | none | `streams` | Grants app-scoped Wendy Data sockets. `WENDY_DATA_SOCKET` accepts legacy events/predictions; `WENDY_DATA_STREAM_DIR` contains declared lightweight or durable stream sockets. At most one entitlement per app. |
+| `admin` | none | none | Grants the container the wendy-agent's local control socket (exposed as `WENDY_AGENT_SOCKET`, currently `/run/wendy/agent/agent.sock` — read the env var, don't hard-code). This is the agent's **full gRPC with no authentication** — an app with `admin` can start, stop, and delete apps and read all device data locally. **Grant it only to fully-trusted first-party apps.** At most one per app. Requires an agent build that serves the local socket. |
 
-`network.ports` is accepted by config validation, but the runtime path in `entitlements.go` currently acts on `mode`. Do not claim port mapping behavior without tracing the caller that consumes `ports`.
+`network.ports` being accepted by validation does not establish port forwarding.
+For host networking, verify the app's listening address and port directly.
 
-`build` and `audio.allowCdiDevSnd` appear in the upstream `wendy-agent` source and docs but are **not accepted by the released CLI validator** yet — treat them as unreleased and do not add them to a `wendy.json` you intend to deploy today.
+Use the `wendy-data` workflow for stream configuration, event triggers, durable
+acknowledgements, and export. Recording data does not require `admin`.
+
+## Persistent volumes and executable code
+
+On Linux/WendyOS, a file under a `persist` mount can have mode `0755` and still
+fail with `Permission denied` when executed directly. Check file ownership and
+permissions as well as the mount policy; `chmod` cannot override `noexec`.
+
+Keep bundled executable workers in the image outside the volume, for example
+`/usr/local/bin/worker`, and use `/data` for their persistent state. If startup
+copies a bundled worker into `/data` and executes it there, change the launch path
+to the image's copy. Preserve existing volume names, data and mount protections
+during the repair, then verify the app's output and existing data after redeploy.
+
+An interpreter installed in the image can read a persisted script, for example
+`sh /data/worker`, when stored scripts are part of the app's intended design.
+That works for scripts; it does not make a compiled executable runnable on a
+`noexec` mount.
 
 ## Example patterns
 
@@ -65,9 +93,10 @@ Web server:
 ```json
 {
   "appId": "api-server",
-  "platform": "wendyos",
+  "platform": "linux",
   "entitlements": [
-    { "type": "network", "mode": "host" }
+    { "type": "network", "mode": "host" },
+    { "type": "http", "port": 8000 }
   ],
   "readiness": {
     "tcpSocket": { "port": 8000 },
@@ -81,7 +110,7 @@ Camera + audio app:
 ```json
 {
   "appId": "camera-assistant",
-  "platform": "wendyos",
+  "platform": "linux",
   "entitlements": [
     { "type": "network", "mode": "host" },
     { "type": "camera" },
@@ -95,7 +124,7 @@ Jetson GPU app with persistent model cache:
 ```json
 {
   "appId": "vision-inference",
-  "platform": "wendyos",
+  "platform": "linux",
   "entitlements": [
     { "type": "network", "mode": "host" },
     { "type": "gpu" },
@@ -110,7 +139,7 @@ I2C sensor app:
 ```json
 {
   "appId": "sensor-reader",
-  "platform": "wendyos",
+  "platform": "linux",
   "entitlements": [
     { "type": "i2c", "device": "i2c-1" },
     { "type": "persist", "name": "sensor-data", "path": "/data" }
@@ -118,27 +147,27 @@ I2C sensor app:
 }
 ```
 
-## Multi-service isolation and frameworks
+Serial device app (USB-serial servo bus):
 
-These are top-level `wendy.json` keys (not entitlements) that apply to apps with a `services` map. See [wendy-project-setup] for the full multi-service shape.
-
-- `isolation` (top-level string) controls namespace sharing across services:
-  - `shared-ipc` — shares the network and IPC namespaces plus `/dev/shm` across all services, enabling zero-copy/shared-memory transports (e.g. CycloneDDS intra-host). Host networking alone does not share IPC or `/dev/shm`.
-  - `shared-network` — shares only the network (and UTS) namespaces; no shared `/dev/shm`.
-  - `isolated` — per-service CNI networking with an assigned IP and an injected `/etc/hosts` so service names resolve.
-  The value is not enum-validated by the CLI, so a typo is silently inert; keep it to the three values above.
-- `frameworks.ros2` (top-level and per-service) injects ROS 2 environment into every service container: `ROS_DOMAIN_ID`, `RMW_IMPLEMENTATION`, and (for CycloneDDS) a `CYCLONEDDS_URI`, plus `ROS_LOCALHOST_ONLY=1`. Because it forces localhost-only DDS and overrides `CYCLONEDDS_URI`, use it for intra-host ROS 2 graphs — **not** for apps that must reach an external robot over the physical network with their own DDS config. See [wendy-ros2].
+```json
+{
+  "appId": "servo-controller",
+  "platform": "linux",
+  "entitlements": [
+    { "type": "network", "mode": "host" },
+    { "type": "serial", "device": "ttyACM0" }
+  ]
+}
+```
 
 ## Review checklist
 
 - `appId` is present.
 - Entitlement names are current; prefer `camera` over `video`.
-- Entitlement types are limited to the released set; do not add `build` or `audio.allowCdiDevSnd` (unreleased).
 - `persist` entries include both `name` and an absolute container `path`.
-- `i2c` entries include a device name without a leading `/dev/` (bare `i2c-N`); `serial` devices are bare `ttyACM<n>`/`ttyUSB<n>`.
-- `mcp` entries include a `port`; `display`/`admin`/`mcp` appear at most once per app.
-- `admin` is present only on fully-trusted first-party apps.
+- Linux/WendyOS startup failures under `persist` paths are checked for `noexec` before changing file modes.
+- `i2c` entries include a device name without a leading `/dev/`.
+- `serial` entries include a bare USB tty node name (e.g. `ttyACM0`, `ttyUSB0`) matching `^(ttyACM|ttyUSB)[0-9]+$`; on-board UARTs (`ttyAMA*`, `ttyS*`) are not supported.
 - Device-heavy apps include only the devices they actually use.
 - GPU issues are checked across app image, device type, CDI, agent logs, and app fallback behavior before blaming the entitlement alone.
-- For ROS 2 apps, DDS discovery needs `network` host mode; intra-host zero-copy needs `isolation: shared-ipc`; `frameworks.ros2` is not used when talking to an external robot with app-managed DDS.
 - JSON examples remain valid JSON; do not put comments inside `wendy.json`.

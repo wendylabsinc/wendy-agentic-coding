@@ -1,6 +1,6 @@
 ---
 name: wendy-install
-description: Use when a developer needs to install, verify, or repair the Wendy CLI before using `wendy run`, `wendy discover`, or device workflows.
+description: Use when a developer needs to install, update, verify, or repair the Wendy CLI, MCP server, or the plugin itself before using `wendy run`, `wendy discover`, or device workflows.
 ---
 
 # Wendy CLI Install Workflow
@@ -13,7 +13,7 @@ Installing this plugin must not silently install Wendy CLI. Treat Wendy CLI inst
 
 Do not run an OS-level installer if `wendy --version` already works unless the user explicitly asks to reinstall or upgrade.
 
-For the full plugin workflow, including `wendy mcp` and `wendy device hardware`, require Wendy CLI `2026.04.30-211221` or newer. If the installed version is older, tell the user which workflow is blocked and recommend updating the CLI before using MCP or hardware inspection.
+Check the installed CLI's help and the running MCP tool list for each required capability. A historical minimum version does not establish that installation planning, ROS diagnostics or newer deployment routing is available. Update the CLI when needed, then restart the MCP host.
 
 ## Detect the host
 
@@ -57,8 +57,76 @@ wendy --version
 wendy discover --json
 ```
 
-If the user is working from source inside `/Users/maximilianalexander/wendylabsinc/wendy-agent`, use `wendy-dev` for source CLI testing when that shell function is available.
+When working from source, use the checkout's documented build command and record the binary path being tested.
+
+## Update
+
+### Wendy CLI
+
+Check for a newer release without changing the installation:
+
+```bash
+wendy update --check --json
+```
+
+When the user has authorized updating, run:
+
+```bash
+wendy update --yes
+```
+
+This detects the installation method and preserves the nightly channel. Homebrew
+and recognized WinGet, APT, and RPM installations can update automatically;
+Arch/AUR and manual installations return their specific instructions. Without a
+terminal, APT/RPM elevation must already be authorized; the updater uses sudo
+without a password prompt. Follow those instructions
+within the user's update authorization. Do not replace a package-owned executable
+with a generic installer or silently add a second copy.
+
+For an older CLI without `update`, identify its package manager first. Stable
+Homebrew uses `brew update && brew upgrade wendylabsinc/tap/wendy`; nightly uses
+`wendylabsinc/tap/wendy-nightly`. WinGet uses
+`winget upgrade --id WendyLabs.Wendy --exact --source winget`. APT, RPM, and AUR
+installations should use their existing package source, while a manually
+downloaded package may need a newer package file.
+
+After updating, check the actual CLI on PATH and verify the required capabilities:
+```bash
+wendy --version
+wendy update --check
+```
+
+A successful package-manager exit does not prove PATH selects the new binary.
+Resolve shadowed copies before claiming success. The updater's verified result
+does not update a running MCP process; restart it next.
+
+### Wendy MCP
+
+After a CLI update, reconfigure the MCP server so AI tools pick up the updated binary:
+```bash
+wendy mcp setup
+```
+
+Then restart or reload the target AI tool so its MCP process uses the new binary.
+
+### End-user skills
+
+`wendy mcp setup` installs the same end-user skill group for detected Codex,
+Claude Code, and OpenCode installations, including supporting references.
+Rerun it after updating the CLI. It does not install Wendy engineering skills.
+
+If the user installed the optional `wendy-agentic-coding` plugin instead, update
+it through the assistant's plugin manager. Avoid installing both copies of the
+same skills. Do not send end-users to the internal `claude-skills` collection.
 
 ## Common follow-up
 
-If `wendy discover --json` finds no device, do not treat that as a failed CLI install. Separate CLI installation from device reachability, then move to `wendy-device-debug` if the task is about a missing or unreachable device.
+For first-time ChatGPT users, explain Wendy in one sentence and return to
+[wendy-onboarding](../wendy-onboarding/SKILL.md) after verifying installation.
+Use `wendy mcp setup chatgpt` for the local desktop connection; it requires no
+Cloud account or configured target. Hosted inspection and app control use the
+existing registered plugin and do not require installing this CLI. A request
+to get started with a local workflow includes ordinary CLI and MCP setup;
+plugin installation alone does not.
+
+If `wendy discover --json` finds no device, establish whether WendyOS/Agent was ever installed. Use `wendy-device-install` for a new board or robot; use `wendy-device-debug` for an existing installation that became unreachable. An empty scan by itself proves neither installation failure nor a network fault.

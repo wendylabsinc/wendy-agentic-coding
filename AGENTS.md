@@ -2,9 +2,11 @@
 
 This repository packages Wendy Labs agentic-coding workflows as installable Codex and Claude Code plugins.
 
-Keep reusable instructions inside `plugins/wendy-agentic-coding/skills/` whenever possible. Use Claude-only `commands/` and `agents/` as thin wrappers around the shared skills so Codex and Claude stay aligned.
+Keep reusable instructions inside `plugins/wendy-agentic-coding/skills/` whenever possible. Use Claude-only `commands/` as thin wrappers around the shared skills so Codex and Claude stay aligned.
 
 Do not commit device credentials, local hostnames, tokens, or private machine paths beyond documented Wendy workspace examples. If device access is needed, refer agents to the local repo's `AGENTS.md` or the user's current instructions.
+
+The plugin's source of truth is `plugins/wendy-agentic-coding` in `wendylabsinc/wendyos`; sync changes from there.
 
 When changing plugin manifests, keep both:
 

@@ -9,7 +9,7 @@
     {
       "name": "wendy-agentic-coding",
       "source": "./plugins/wendy-agentic-coding",
-      "description": "Wendy CLI, wendy-agent, WendyOS, and device workflow guidance for Claude Code."
+      "description": "Build, deploy, and debug apps on WendyOS robots and edge devices."
     }
   ]
 }

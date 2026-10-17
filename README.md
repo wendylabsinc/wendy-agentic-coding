@@ -2,7 +2,7 @@
 
 Shared Codex and Claude Code plugin content for developers building with Wendy.
 
-It teaches agents how the Wendy CLI, `wendy-agent`, WendyOS, project setup, `wendy.json`, entitlements, device operations, MCP setup, app lifecycle commands, device debugging, and PR workflows actually work.
+It teaches agents how the Wendy CLI, `wendy-agent`, WendyOS, project setup, `wendy.json`, entitlements, device operations, MCP setup, app lifecycle commands, Wendy Data, and device debugging actually work.
 
 License: Apache-2.0.
 
@@ -143,44 +143,35 @@ Rules of thumb:
 - For `serial`, `device` is a bare USB tty node such as `ttyACM0`/`ttyUSB0`.
 - For `gpio`, optional `pins` are documentation/validation; runtime access is chip-level.
 - Use `mcp` (requires `port`) to expose a container as an MCP server; use `admin` only for fully-trusted first-party apps (unauthenticated local device control).
-- For multi-service and ROS 2 apps, use the top-level `isolation` and `frameworks.ros2` keys; see the `wendy-ros2` skill.
+- For multi-service and ROS 2 apps, use the top-level `isolation` and `frameworks.ros2` keys; see the `wendy-robot-deploy` skill.
 
 ## What It Includes
 
 Skills:
 
-- `wendy-codebase`: orient on Wendy CLI, agent, gRPC, runtime, and repo layout.
-- `wendy-install`: install and verify Wendy CLI on macOS, Linux, or Windows.
-- `wendy-template-app`: create or adapt Wendy apps from the closest template in `wendylabsinc/templates`.
-- `wendy-project-setup`: initialize projects, validate `wendy.json`, print schema, and manage project entitlements.
+- `wendy-onboarding`: guide a first-time user to a physical device or a simulator.
+- `wendy-install`: install, update, and verify the Wendy CLI, MCP server, and plugin.
+- `wendy-device-install`: install WendyOS on a new Raspberry Pi or Jetson and verify first boot.
+- `wendy-mcp-setup`: configure and explain the Wendy MCP server for AI assistants.
+- `wendy-template-app`: create a Wendy app from the closest template in `wendylabsinc/templates`.
+- `wendy-project-setup`: initialize projects, validate `wendy.json`, and manage project entitlements.
 - `wendy-entitlements`: choose and validate `wendy.json` entitlements.
-- `wendy-device-ops`: discover/select devices, inspect version/hardware/WiFi state, update agents, and gather diagnostic evidence.
-- `wendy-mcp-setup`: configure and explain the Wendy CLI MCP server for AI assistants.
+- `wendy-device-ops`: discover devices, inspect hardware and software, configure WiFi, and update the agent.
 - `wendy-app-lifecycle`: build, run, detach, stream logs, manage apps, and clean up volumes.
-- `wendy-ros2`: configure `frameworks.ros2`, DDS networking/isolation, and inspect live ROS 2 systems with `wendy device ros2`.
-- `wendy-device-debug`: debug WendyOS and live-device runtime issues.
-- `wendy-pr-workflow`: prepare, validate, publish, and clean up Wendy PRs.
+- `wendy-robot-deploy`: deploy ROS 2 and robot apps, including Unitree Go2/G1 and simulators.
+- `wendy-data`: Wendy Data campaigns, episodes, and application recording streams.
+- `wendy-device-debug`: diagnose unreachable devices, failed deploys, and unhealthy apps.
+- `wendy`: a single overview skill that links to the others.
 
-Claude Code commands:
+Claude Code commands: `wendy-apps`, `wendy-build`, `wendy-data`,
+`wendy-device-debug`, `wendy-device-install`, `wendy-device-ops`,
+`wendy-entitlements`, `wendy-install`, `wendy-logs`, `wendy-mcp`,
+`wendy-project`, `wendy-robot-deploy`, `wendy-run`, and `wendy-template`, each
+under `/wendy-agentic-coding:`.
 
-- `/wendy-agentic-coding:wendy-orient`
-- `/wendy-agentic-coding:wendy-install`
-- `/wendy-agentic-coding:wendy-template`
-- `/wendy-agentic-coding:wendy-project`
-- `/wendy-agentic-coding:wendy-entitlements`
-- `/wendy-agentic-coding:wendy-device-ops`
-- `/wendy-agentic-coding:wendy-mcp`
-- `/wendy-agentic-coding:wendy-build`
-- `/wendy-agentic-coding:wendy-run`
-- `/wendy-agentic-coding:wendy-logs`
-- `/wendy-agentic-coding:wendy-apps`
-- `/wendy-agentic-coding:wendy-ros2`
-- `/wendy-agentic-coding:wendy-device-debug`
-- `/wendy-agentic-coding:wendy-pr`
-
-Claude Code agent:
-
-- `wendy-agentic-coding:wendy-runtime-debugger`
+The Claude Code plugin also starts the Wendy MCP server (`wendy mcp serve`) and
+runs a SessionStart hook that reports the installed CLI version in Wendy
+projects. See the [plugin README](plugins/wendy-agentic-coding/README.md).
 
 ## Repository Layout
 
@@ -188,43 +179,17 @@ This repository is a marketplace for both Codex and Claude Code:
 
 - Codex marketplace: `.agents/plugins/marketplace.json`
 - Claude Code marketplace: `.claude-plugin/marketplace.json`
-- Shared plugin payload: `plugins/wendy-agentic-coding/`
-- Shared skills: `plugins/wendy-agentic-coding/skills/`
-- Claude-only command wrappers: `plugins/wendy-agentic-coding/commands/`
-- Claude-only agent definition: `plugins/wendy-agentic-coding/agents/wendy-runtime-debugger.md`
+- Plugin: `plugins/wendy-agentic-coding/`
+
+The plugin is published from
+[`wendylabsinc/wendyos`](https://github.com/wendylabsinc/wendyos/tree/main/plugins/wendy-agentic-coding).
+Make changes there; this repository is a copy.
 
 For local development:
 
 ```bash
 claude --plugin-dir ./plugins/wendy-agentic-coding
 ```
-
-## Wendy Code Map
-
-The plugin captures this current Wendy CLI and agent architecture:
-
-- `wendy` CLI is a Cobra app under `wendy-agent/go/cmd/wendy`.
-- CLI command wiring lives in `wendy-agent/go/internal/cli/commands`.
-- gRPC client setup lives in `wendy-agent/go/internal/cli/grpcclient`.
-- Build and run providers live in `wendy-agent/go/internal/cli/providers`.
-- `wendy-agent` starts gRPC services from `wendy-agent/go/cmd/wendy-agent`.
-- Agent services live under `wendy-agent/go/internal/agent/services`.
-- Container runtime integration uses containerd code under `wendy-agent/go/internal/agent/containerd`.
-- Runtime entitlements and OCI spec generation live under `wendy-agent/go/internal/agent/oci`.
-
-The skills emphasize reading the real code path, preserving dirty worktrees, verifying runtime wiring, using live device state when needed, and running targeted Go validation before publishing.
-
-## Known Gaps
-
-This plugin is intentionally instruction-first. It does not bundle an app connector, LSP config, or automatic system installer. For MCP, it guides agents to the Wendy CLI's built-in `wendy mcp` commands.
-
-Possible next additions:
-
-- A safe Claude hook that only verifies `wendy --version` at session start and suggests setup if missing.
-- A high-friction `wendy-os-image` skill for OS download/install/drive flashing, with explicit destructive-action confirmation rules.
-- A `wendy-cloud` skill if Cloud run, auth, tunnels, or remote discovery become common agent workflows.
-- More sample `wendy.json` recipes by app type: robotics, sensors, RealSense variants, and GPU inference.
-- A Codex/Claude eval suite that checks whether the skills choose the right entitlements from app descriptions.
 
 ## Sources Checked
 
